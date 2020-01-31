@@ -12,3 +12,5 @@ epsilon = 0.2
 maxiterations = 100
 GradientDescent(data, y, epsilon, maxiterations)
 print("Done!")
+
+print("HEllO world ")
