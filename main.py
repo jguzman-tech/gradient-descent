@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def GradientDescent(X, y, stepSize, maxiterations):
     weightVector = np.zeros(X.shape[1])
@@ -13,4 +14,14 @@ maxiterations = 100
 GradientDescent(data, y, epsilon, maxiterations)
 print("Done!")
 
-print("HEllO world ")
+mydata = pd.read_csv("SAheart.data")
+
+mydata["famhist"].replace('Absent',0)
+mydata["famhist"].replace('Present',0)
+
+mydata = np.array(mydata)
+
+print (mydata)
+
+
+
