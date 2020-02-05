@@ -54,11 +54,6 @@ def parse(fname, seed):
         raise Exception("Unknown dataset")
     return temp_ar
 
-X = None
-y = None
-stepSize = float(sys.argv[2])
-maxiterations = int(sys.argv[3])
-seed = int(sys.argv[4])
 print("sys.argv = " + str(sys.argv))
 # TODO: Parsing should be wrapped into a function
 #       we want: temp_ar = parse(fname)
@@ -70,6 +65,9 @@ if len(sys.argv) < 5 or sys.argv[1] not in {'spam.data', 'SAheart.data', 'zip.tr
     print("seed must be an int")
     exit(0)
 
+stepSize = float(sys.argv[2])
+maxiterations = int(sys.argv[3])
+seed = int(sys.argv[4])
 temp_ar = parse(sys.argv[1], seed)
 
 # temp_ar is randomly shuffled at this point
@@ -98,6 +96,7 @@ print('  {0: >10} {1: >4} {2: >4}'.format('train',
 print('  {0: >10} {1: >4} {2: >4}'.format('validation',
                                           str((validation_y == 0).sum()),
                                           str((validation_y == 1).sum())))
+
 weightMatrix = GradientDescent(train_X, train_y, stepSize, maxiterations)
 
 validation_predict = np.matmul(validation_X, weightMatrix)
@@ -119,7 +118,7 @@ plt.plot(validation_error, c="red", label="validation")
 plt.plot(train_error, c="blue", label="train")
 plt.xlabel('% Error')
 plt.ylabel('Iteration')
-plt.savefig(sys.argv[1] + "_itr_" + str(maxiterations)+ "_step_" + str(stepSize) + "_seed_" + str(seed) + "plot.png")
+plt.savefig(sys.argv[1] + "_itr_" + str(maxiterations)+ "_step_" + str(stepSize) + "_seed_" + str(seed) + "_plot.png")
     
 print("Done!")
 # import pdb; pdb.Pdb().set_trace() # break into pdb
