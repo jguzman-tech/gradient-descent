@@ -31,8 +31,8 @@ def GradientDescent(X, y, stepSize, maxiterations):
 X = None
 y = None
 epsilon = float(sys.argv[2])
-maxiterations = int(500)
-seed = int(50)
+maxiterations = int(sys.argv[3])
+seed = int(sys.argv[4])
 print("sys.argv = " + str(sys.argv))
 # TODO: Parsing should be wrapped into a function
 #       we want: X, y = parser(fname)
