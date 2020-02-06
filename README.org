@@ -1,6 +1,7 @@
 * Gradient Descent
 ** 1. How to run
-*** 1.1. First clone the repo
+*** 1.1. First clone the repo 
+git clone <git hub Repo URL>
 *** 1.2. Create an arbitrary directory
 #+BEGIN_SRC
 mkdir ./.venv
