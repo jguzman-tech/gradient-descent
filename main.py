@@ -16,8 +16,6 @@ def MeanLogisticLoss(weightMatrix, X, y):
     for col in range(maxiter):
         theta = weightMatrix[:, col][np.newaxis].T # n x 1 matrix
         mySum = 0.0
-        if(col % 50 == 0):
-            print("in MML: on iteration #" + str(col))
         for row in range(m):
             mySum += np.log(1 + np.exp(-1 * y_tilde[row, 0] * np.matmul(X[row][np.newaxis], theta)[0, 0]))
         result.append(mySum / m)
@@ -213,12 +211,3 @@ fnames.append(fname)
 print("Figures Created:")
 for i in range(len(fnames)):
     print(str(fnames[i]))
-
-# We need to be able to graph 3 roc curves on the same figure for each data set
-# 3 seeds for each data set, 1 roc curve
-# save the tpr and fpr in a file
-# make another python script that can take an arbitrary number of tpr/fpr csv files
-# and output a single plot with multiple roc_curves
-# this is for extra credit
-
-# import pdb; pdb.Pdb().set_trace() # break into pdb
