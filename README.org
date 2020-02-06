@@ -1,0 +1,31 @@
+* Gradient Descent
+** How to run
+*** First clone the repo
+*** Create an arbitrary directory
+#+BEGIN_SRC
+mkdir ./.venv
+#+END_SRC
+*** Create a virtual environment
+#+BEGIN_SRC
+python3 -m venv ./.venv
+#+END_SRC
+*** Activate the virtual environment
+#+BEGIN_SRC
+. ./.venv/bin/activate
+#+END_SRC
+*** Install module requirements
+#+BEGIN_SRC
+pip3 install -r ./requirements.txt
+#+END_SRC
+*** Execute
+#+BEGIN_SRC
+python3 main.py <dataset> <stepSize> <maxiterations> <seed>
+#+END_SRC
+The valid dataset values are: spam.data, SAheart.data, and zip.train.
+stepSize must be a float
+maxiterations must be an int
+seed must be an int
+
+If successful then the program will create an error plot, a mean logistic loss
+plot, and a roc curve for the dataset. The filenames will include the arguments
+that you provided the program.
