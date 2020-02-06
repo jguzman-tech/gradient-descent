@@ -1,28 +1,48 @@
 import numpy as np
+import sklearn
+from sklearn import metrics
 import sys
 from scipy import stats
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
-def LogisticLoss(theta, X, y):
-    result = 0.0
+def softmax(xs):
+    return np.exp(xs) / sum(np.exp(xs))
+
+def MeanLogisticLoss(weightMatrix, X, y):
+    y_tilde = np.copy(y)
+    y_tilde[y_tilde != 1] = -1
+    result = []
+    m = X.shape[0]
+    maxiter = weightMatrix.shape[1]
+    for col in range(maxiter):
+        theta = weightMatrix[:, col][np.newaxis].T # n x 1 matrix
+        mySum = 0.0
+        if(col % 50 == 0):
+            print("in MML: on iteration #" + str(col))
+        for row in range(m):
+            mySum += np.log(1 + np.exp(-1 * y_tilde[row, 0] * np.matmul(X[row][np.newaxis], theta)[0, 0]))
+        result.append(mySum / m)
+    return result
+
+def Gradient(theta, X, y_tilde):
+    result = np.zeros(X.shape[1], dtype=float)
     m = X.shape[0]
     for row in range(m): # for each row
-        y_tilde = -1
-        if(y[row, 0] == 1):
-            y_tilde = 1
-        numerator = -1 * y_tilde * X[row]
-        denominator = (1 + np.exp(y_tilde * theta.T * X[row]))
-        result += numerator / denominator
+        numerator = -1 * y_tilde[row, 0] * X[row]
+        denominator = (1 + np.exp(y_tilde[row, 0] * np.matmul(theta[np.newaxis], X[row][np.newaxis].T)))
+        result += (numerator / denominator)[0, :] # numerator is n x 1, denominator is 1 x 1
     result = result / m
     return result
 
 def GradientDescent(X, y, stepSize, maxiterations):
     weightVector = np.zeros(X.shape[1], dtype=float)
     weightMatrix = np.zeros((X.shape[1], maxiterations), dtype=float)
+    y_tilde = np.copy(y)
+    y_tilde[y_tilde != 1] = -1
     for k in range(1, maxiterations + 1):
-        newWeightVector = weightVector - stepSize * LogisticLoss(weightVector, X, y)
+        newWeightVector = weightVector - stepSize * Gradient(weightVector, X, y_tilde)
         weightVector = newWeightVector
         weightMatrix[:, k - 1] = newWeightVector
     return weightMatrix
@@ -35,6 +55,7 @@ def parse(fname, seed):
                 row = line.split(' ')
                 all_rows.append(row)
         temp_ar = np.array(all_rows, dtype=float)
+        temp_ar = temp_ar.astype(float)
         # standardize each column to have μ = 0 and σ^(2) = 1
         # in other words convert all elements to z-scores for each column
         for col in range(temp_ar.shape[1] - 1): # for all but last column (output)
@@ -46,7 +67,7 @@ def parse(fname, seed):
         # Make sure to replace the present and absent strings
         # Get the zscore if you want to be complete
         # Drop the row column
-        print("Data set SAheart is choosed")
+        pass
     elif(fname == 'zip.train'):
         pass
     else:
@@ -57,11 +78,13 @@ print("sys.argv = " + str(sys.argv))
 # TODO: Parsing should be wrapped into a function
 #       we want: temp_ar = parse(fname)
 if len(sys.argv) < 5 or sys.argv[1] not in {'spam.data', 'SAheart.data', 'zip.train'}:
-    print("Execution example: python3 main.py <dataset> <stepSize> <maxiterations> <seed>")
-    print("The valid dataset values are: spam.data, SAheart.data, and zip.train.")
-    print("stepSize must be a float")
-    print("maxiterations must be an int")
-    print("seed must be an int")
+    help_str = """Execution example: python3 main.py <dataset> <stepSize> <maxiterations> <seed>
+The valid dataset values are: spam.data, SAheart.data, and zip.train.
+stepSize must be a float
+maxiterations must be an int
+seed must be an int
+"""
+    print(help_str)
     exit(0)
 
 stepSize = float(sys.argv[2])
@@ -99,12 +122,12 @@ print('  {0: >10} {1: >4} {2: >4}'.format('validation',
 weightMatrix = GradientDescent(train_X, train_y, stepSize, maxiterations)
 
 validation_predict = np.matmul(validation_X, weightMatrix)
+validation_predict[validation_predict >= 0.0] = 1
 validation_predict[validation_predict < 0.0] = 0
-validation_predict[validation_predict > 0.0] = 1
 
 train_predict = np.matmul(train_X, weightMatrix)
+train_predict[train_predict >= 0.0] = 1
 train_predict[train_predict < 0.0] = 0
-train_predict[train_predict > 0.0] = 1
 
 validation_error = []
 train_error = []
@@ -113,11 +136,59 @@ for i in range(maxiterations):
 for i in range(maxiterations):
     train_error.append(100 * (np.mean(train_y[:, 0] != train_predict[:, i])))
 
+fnames = []
+# % error plot
 plt.plot(validation_error, c="red", label="validation")
+plt.scatter([np.where(validation_error == np.min(validation_error))[0][0]], [np.min(validation_error)], marker='o', s=80, facecolors='none', edgecolors='r')
 plt.plot(train_error, c="blue", label="train")
-plt.xlabel('% Error')
-plt.ylabel('Iteration')
-plt.savefig(sys.argv[1] + "_itr_" + str(maxiterations)+ "_step_" + str(stepSize) + "_seed_" + str(seed) + "_plot.png")
-    
-print("Done!")
+plt.scatter([np.where(train_error == np.min(train_error))[0][0]], [np.min(train_error)], marker='o', s=80, facecolors='none', edgecolors='b')
+plt.xlabel('Iteration')
+plt.ylabel('% Error')
+plt.legend()
+fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_err_plot.png"
+plt.savefig(fname)
+plt.clf()
+fnames.append(fname)
+
+validation_mll = MeanLogisticLoss(weightMatrix, validation_X, validation_y)
+train_mll = MeanLogisticLoss(weightMatrix, train_X, train_y)
+# Logistic Loss plot
+plt.plot(validation_mll, c="red", label="validation")
+plt.scatter([np.where(validation_mll == np.min(validation_mll))[0][0]], [np.min(validation_mll)], marker='o', s=80, facecolors='none', edgecolors='r')
+plt.plot(train_mll, c="blue", label="train")
+plt.scatter([np.where(train_mll == np.min(train_mll))[0][0]], [np.min(train_mll)], marker='o', s=80, facecolors='none', edgecolors='b')
+plt.xlabel('Iteration')
+plt.ylabel('Logistic Loss')
+plt.legend()
+fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_mll_plot.png"
+plt.savefig(fname)
+plt.clf()
+fnames.append(fname)
+
+# We can use the softmax to create a probability distribution from a set of real numbers
+# We make roc_curves with the test set
+optimal_itr = np.where(validation_mll == np.min(validation_mll))[0][0]
+test_predict = np.matmul(test_X, weightMatrix)
+fpr, tpr, thresholds = metrics.roc_curve(test_y[:, 0], test_predict[:, optimal_itr], pos_label=1)
+linear = np.linspace(0, 1, 1000)
+plt.plot(linear, linear, linestyle='--', color="black")
+plt.plot(fpr, tpr, color='green')
+plt.xlabel('FPR')
+plt.ylabel('TPR')
+fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_roc_curve.png"
+plt.savefig(fname)
+plt.clf()
+fnames.append(fname)
+
+print("Figures Created:")
+for i in range(len(fnames)):
+    print(str(fnames[i]))
+
+# We need to be able to graph 3 roc curves on the same figure for each data set
+# 3 seeds for each data set, 1 roc curve
+# save the tpr and fpr in a file
+# make another python script that can take an arbitrary number of tpr/fpr csv files
+# and output a single plot with multiple roc_curves
+# this is for extra credit
+
 # import pdb; pdb.Pdb().set_trace() # break into pdb
