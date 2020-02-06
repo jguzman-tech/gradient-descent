@@ -2,10 +2,14 @@ import numpy as np
 import sklearn
 from sklearn import metrics
 import sys
+import scipy
 from scipy import stats
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+
+import warnings
+warnings.simplefilter('error') # treat warnings as errors
 
 def MeanLogisticLoss(weightMatrix, X, y):
     y_tilde = np.copy(y)
@@ -14,7 +18,7 @@ def MeanLogisticLoss(weightMatrix, X, y):
     m = X.shape[0]
     maxiter = weightMatrix.shape[1]
     for col in range(maxiter):
-        theta = weightMatrix[:, col][np.newaxis].T # n x 1 matrix
+        theta = weightMatrix[:, col][np.newaxis].T
         mySum = 0.0
         for row in range(m):
             mySum += np.log(1 + np.exp(-1 * y_tilde[row, 0] * np.matmul(X[row][np.newaxis], theta)[0, 0]))
@@ -42,7 +46,7 @@ def GradientDescent(X, y, stepSize, maxiterations):
         weightMatrix[:, k - 1] = newWeightVector
     return weightMatrix
 
-def parse(fname, seed):
+def Parse(fname, seed):
     if(fname == 'spam.data'):
         all_rows = []
         with open('spam.data') as fp:
@@ -51,17 +55,7 @@ def parse(fname, seed):
                 all_rows.append(row)
         temp_ar = np.array(all_rows, dtype=float)
         temp_ar = temp_ar.astype(float)
-        # standardize each column to have μ = 0 and σ^(2) = 1
-        # in other words convert all elements to z-scores for each column
-        for col in range(temp_ar.shape[1] - 1): # for all but last column (output)
-            temp_ar[:, col] = stats.zscore(temp_ar[:, col])
-        np.random.seed(seed)
-        np.random.shuffle(temp_ar) # shuffle rows, set of columns remain the same
     elif(fname == 'SAheart.data'):
-        # Make sure to skip the first row
-        # Make sure to replace the present and absent strings
-        # Get the zscore if you want to be complete
-        # Drop the row column
         all_rows = []
         with open('SAheart.data') as fp:
             for line in fp:
@@ -73,12 +67,6 @@ def parse(fname, seed):
         all_rows[all_rows == "Absent"] = "0"
         all_rows= all_rows[:,1:]
         temp_ar = np.array(all_rows, dtype=float)
-        # standardize each column to have μ = 0 and σ^(2) = 1
-        # in other words convert all elements to z-scores for each column
-        for col in range(temp_ar.shape[1] - 1): # for all but last column (output)
-            temp_ar[:, col] = stats.zscore(temp_ar[:, col])
-        np.random.seed(seed)
-        np.random.shuffle(temp_ar) # shuffle rows, set of columns remain the same
     elif(fname == 'zip.train'):
         all_rows = []
         with open('zip.train') as fp:
@@ -90,19 +78,26 @@ def parse(fname, seed):
         all_rows=all_rows[(all_rows[:,0] == "0.0000") |  (all_rows[:,0] == "1.0000")]
         all_rows[:,[0,256]]= all_rows[:,[256,0]]
         temp_ar = np.array(all_rows, dtype=float)
-        # standardize each column to have μ = 0 and σ^(2) = 1
-        # in other words convert all elements to z-scores for each column
-        for col in range(temp_ar.shape[1] - 1): # for all but last column (output)
-            temp_ar[:, col] = stats.zscore(temp_ar[:, col])
-        np.random.seed(seed)
-        np.random.shuffle(temp_ar) # shuffle rows, set of columns remain the same
+        # remove any cols with only 1 unique element, it'll cause errors
+        useless_cols = []
+        for col in range(temp_ar.shape[1] - 1): # iterate through all but the last column
+            if(np.unique(temp_ar[:, col]).shape[0] == 1):
+                useless_cols.append(col)
+        temp_ar = np.delete(temp_ar, [useless_cols], 1)
     else:
         raise Exception("Unknown dataset")
+    # standardize each column to have μ = 0 and σ^(2) = 1
+    # in other words convert all elements to z-scores for each column
+    for col in range(temp_ar.shape[1] - 1): # for all but last column (output)
+        std = np.std(temp_ar[:, col])
+        if(std == 0):
+            print("col " + str(col) + " has an std of 0")
+        temp_ar[:, col] = stats.zscore(temp_ar[:, col])
+
+    np.random.seed(seed)
+    np.random.shuffle(temp_ar) # shuffle rows, set of columns remain the same
     return temp_ar
 
-print("sys.argv = " + str(sys.argv))
-# TODO: Parsing should be wrapped into a function
-#       we want: temp_ar = parse(fname)
 if len(sys.argv) < 5 or sys.argv[1] not in {'spam.data', 'SAheart.data', 'zip.train'}:
     help_str = """Execution example: python3 main.py <dataset> <stepSize> <maxiterations> <seed>
 The valid dataset values are: spam.data, SAheart.data, and zip.train.
@@ -116,7 +111,7 @@ seed must be an int
 stepSize = float(sys.argv[2])
 maxiterations = int(sys.argv[3])
 seed = int(sys.argv[4])
-temp_ar = parse(sys.argv[1], seed)
+temp_ar = Parse(sys.argv[1], seed)
 
 # temp_ar is randomly shuffled at this point
 num_rows = temp_ar.shape[0]
@@ -163,6 +158,7 @@ for i in range(maxiterations):
     train_error.append(100 * (np.mean(train_y[:, 0] != train_predict[:, i])))
 
 fnames = []
+
 # % error plot
 plt.plot(validation_error, c="red", label="validation")
 plt.scatter([np.where(validation_error == np.min(validation_error))[0][0]], [np.min(validation_error)], marker='o', s=80, facecolors='none', edgecolors='r')
@@ -179,6 +175,7 @@ fnames.append(fname)
 
 validation_mll = MeanLogisticLoss(weightMatrix, validation_X, validation_y)
 train_mll = MeanLogisticLoss(weightMatrix, train_X, train_y)
+
 # Logistic Loss plot
 plt.plot(validation_mll, c="red", label="validation")
 plt.scatter([np.where(validation_mll == np.min(validation_mll))[0][0]], [np.min(validation_mll)], marker='o', s=80, facecolors='none', edgecolors='r')
