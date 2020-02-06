@@ -173,7 +173,7 @@ plt.ylabel('% Error')
 plt.legend()
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_err_plot.png"
 fname="./figures" + fname
-plt.savefig(/figures/fname)
+plt.savefig(fname)
 plt.clf()
 fnames.append(fname)
 
