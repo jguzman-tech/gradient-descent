@@ -7,9 +7,6 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
-def softmax(xs):
-    return np.exp(xs) / sum(np.exp(xs))
-
 def MeanLogisticLoss(weightMatrix, X, y):
     y_tilde = np.copy(y)
     y_tilde[y_tilde != 1] = -1
@@ -196,10 +193,12 @@ plt.savefig(fname)
 plt.clf()
 fnames.append(fname)
 
-# We can use the softmax to create a probability distribution from a set of real numbers
-# We make roc_curves with the test set
+# The sklearn.metrics.roc_curve automatically converts our real numbers to probabilities
+# We make roc_curves with the test set, an using the iteration # with the minimum LL for
+# our validaiton set
 optimal_itr = np.where(validation_mll == np.min(validation_mll))[0][0]
 test_predict = np.matmul(test_X, weightMatrix)
+import pdb; pdb.Pdb().set_trace()
 fpr, tpr, thresholds = metrics.roc_curve(test_y[:, 0], test_predict[:, optimal_itr], pos_label=1)
 linear = np.linspace(0, 1, 1000)
 plt.plot(linear, linear, linestyle='--', color="black")
