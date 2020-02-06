@@ -3,9 +3,13 @@ Project #1 for CS499: Deep Learning
 
 How to run:
 
-* First create a virtual environment
+* First create an arbitrary directory
 
 	I suggest cd'ing into gradient-descent first
+
+	`mkdir ./.venv`
+
+* Create a virtual environment
 
 	`python3 -m venv ./.venv`
 
