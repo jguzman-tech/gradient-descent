@@ -47,6 +47,23 @@ def parse(fname, seed):
         # Get the zscore if you want to be complete
         # Drop the row column
         print("Data set SAheart is choosed")
+        all_rows = []
+        with open('SAheart.data') as fp:
+            for line in fp:
+                row = line.split(',')
+                all_rows.append(row)
+        all_rows = all_rows[1:]
+        all_rows=np.array(all_rows)
+        all_rows[all_rows == "Present"] = "1"
+        all_rows[all_rows == "Absent"] = "0"
+        all_rows= all_rows[:,1:]
+        temp_ar = np.array(all_rows, dtype=float)
+        # standardize each column to have μ = 0 and σ^(2) = 1
+        # in other words convert all elements to z-scores for each column
+        for col in range(temp_ar.shape[1] - 1): # for all but last column (output)
+            temp_ar[:, col] = stats.zscore(temp_ar[:, col])
+        np.random.seed(seed)
+        np.random.shuffle(temp_ar) # shuffle rows, set of columns remain the same
     elif(fname == 'zip.train'):
         pass
     else:
