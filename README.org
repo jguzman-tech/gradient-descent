@@ -27,6 +27,13 @@ stepSize must be a float
 maxiterations must be an int
 seed must be an int
 
-If successful then the program will create an error plot, a mean logistic loss
-plot, and a roc curve for the dataset. The filenames will include the arguments
-that you provided the program.
+If successful then the program will create an error plot, a mean logistic loss,
+and a ROC curve csv file for the dataset. The filenames will include the
+arguments that you provided the program.
+
+You can generate ROC curve graphs by passing ROC curve csv filenames as
+command-line arguments to our roc_curve_grapher.py file.
+
+#+BEGIN_SRC
+python3 roc_curve_grapher.py <roc-curve-1.csv> <roc-curve-2.csv> ...
+#+END_SRC
