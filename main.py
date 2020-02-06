@@ -177,7 +177,8 @@ plt.xlabel('Iteration')
 plt.ylabel('% Error')
 plt.legend()
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_err_plot.png"
-plt.savefig(fname)
+fname="./figures" + fname
+plt.savefig(/figures/fname)
 plt.clf()
 fnames.append(fname)
 
@@ -192,6 +193,7 @@ plt.xlabel('Iteration')
 plt.ylabel('Logistic Loss')
 plt.legend()
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_mll_plot.png"
+fname="./figures" + fname
 plt.savefig(fname)
 plt.clf()
 fnames.append(fname)
@@ -207,11 +209,12 @@ plt.plot(fpr, tpr, color='green')
 plt.xlabel('FPR')
 plt.ylabel('TPR')
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_roc_curve.png"
+fname="./figures" + fname
 plt.savefig(fname)
 plt.clf()
 fnames.append(fname)
 
-print("Figures Created:")
+print("Figures Created ")
 for i in range(len(fnames)):
     print(str(fnames[i]))
 
