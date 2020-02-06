@@ -37,3 +37,7 @@ command-line arguments to our roc_curve_grapher.py file.
 #+BEGIN_SRC
 python3 roc_curve_grapher.py <roc-curve-1.csv> <roc-curve-2.csv> ...
 #+END_SRC
+
+**** Note:
+Only execute these programs in the gradient-descent directory because the
+program will attempt to use relative paths to ./figures/ and ./roc-data/
