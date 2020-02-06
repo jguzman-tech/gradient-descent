@@ -1,5 +1,4 @@
 import numpy as np
-import sklearn
 import sys
 from scipy import stats
 import matplotlib
@@ -47,7 +46,7 @@ def parse(fname, seed):
         # Make sure to replace the present and absent strings
         # Get the zscore if you want to be complete
         # Drop the row column
-        pass
+        print("Data set SAheart is choosed")
     elif(fname == 'zip.train'):
         pass
     else:
