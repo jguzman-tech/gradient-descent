@@ -7,6 +7,7 @@ from scipy import stats
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import os.path
 
 import warnings
 warnings.simplefilter('error') # treat warnings as errors
@@ -172,7 +173,7 @@ plt.xlabel('Iteration')
 plt.ylabel('% Error')
 plt.legend()
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_err_plot.png"
-fname="./figures/" + fname
+fname= os.path.join("./figures/",  fname)
 plt.savefig(fname)
 plt.clf()
 fnames.append(fname)
@@ -189,7 +190,7 @@ plt.xlabel('Iteration')
 plt.ylabel('Logistic Loss')
 plt.legend()
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_mll_plot.png"
-fname="./figures/" + fname
+fname = os.path.join("./figures/",  fname)
 plt.savefig(fname)
 plt.clf()
 fnames.append(fname)
@@ -202,7 +203,7 @@ test_predict = np.matmul(test_X, weightMatrix)
 fpr, tpr, thresholds = metrics.roc_curve(test_y[:, 0], test_predict[:, optimal_itr], pos_label=1)
 data = np.array([fpr, tpr]).T
 fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_roc_data.npy"
-fname = "./roc-data/" + fname
+fname = os.path.join("./roc-data/",  fname)
 np.save(fname, data)
 fnames.append(fname)
 
