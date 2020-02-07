@@ -1,4 +1,6 @@
 * Gradient Descent
+Our GradientDescent function is located at:
+https://github.com/jguzman-tech/gradient-descent/blob/master/main.py
 ** 1. How to run
 *** 1.1. First clone the repo 
 git clone https://github.com/jguzman-tech/gradient-descent/
