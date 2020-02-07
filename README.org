@@ -33,13 +33,31 @@ If successful then the program will create an error plot, a mean logistic loss,
 and a ROC curve csv file for the dataset. The filenames will include the
 arguments that you provided the program.
 
-You can generate ROC curve graphs by passing ROC curve csv filenames as
-command-line arguments to our roc_curve_grapher.py file.
+You can generate ROC curve graphs by passing ROC curve npy filenames as
+command-line arguments to our roc_curve_grapher.py file. These npy files are
+compressed versions of numpy arrays.
 
 #+BEGIN_SRC
-python3 roc_curve_grapher.py <roc-curve-1.csv> <roc-curve-2.csv> ...
+python3 roc_curve_grapher.py <roc-curve-1.npy> <roc-curve-2.npy> ...
 #+END_SRC
 
 **** Note:
 Only execute these programs in the gradient-descent directory because the
 program will attempt to use relative paths to ./figures/ and ./roc-data/
+** 2. Final Report results
+All figures from our final report are located in ./final-report-figs/
+
+*** 2.1. Reproduce our results:
+Again this is assuming a linux system. If you're a windows user then you'll have
+to figure out your powershell or cmd command equivalents.
+**** 2.1.1. Setup your environment as described in '1. How to run'
+**** 2.2.1. Execute ./reproduce.sh
+** 3. About
+This repository was made to fulfill the requirements of Project 1 of NAU's CS499: Deep
+Learning. 
+
+The Gradient Descent algorithm is a simple concept in Euclidean Space. In
+Euclidean Space, for each iteration you move in the -f'(x) direction which will
+eventually lead you to a critical point. Our goal is to find the minimum of
+f(x), doing so will allow us to classify a data point as a 0 or a 1 with high
+accuracy.
