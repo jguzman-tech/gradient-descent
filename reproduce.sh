@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python3 main.py spam.data 0.1 2000 101
-python3 main.py spam.data 0.4 2000 101
+python3 main.py spam.data 0.4 2000 102
 python3 main.py spam.data 10 100 104
 
 python3 main.py SAheart.data 0.01 800 3
