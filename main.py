@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.simplefilter('error') # treat warnings as errors
 
+from matplotlib.pyplot import figure
+figure(num=None, figsize=(10, 8), dpi=80, facecolor='w', edgecolor='k')
+matplotlib.rc('font', size=24)
+
 def MeanLogisticLoss(weightMatrix, X, y):
     y_tilde = np.copy(y)
     y_tilde[y_tilde != 1] = -1
@@ -160,10 +164,10 @@ for i in range(maxiterations):
 fnames = []
 
 # % error plot
-plt.plot(validation_error, c="red", label="validation")
-plt.scatter([np.where(validation_error == np.min(validation_error))[0][0]], [np.min(validation_error)], marker='o', s=80, facecolors='none', edgecolors='r')
-plt.plot(train_error, c="blue", label="train")
-plt.scatter([np.where(train_error == np.min(train_error))[0][0]], [np.min(train_error)], marker='o', s=80, facecolors='none', edgecolors='b')
+plt.plot(validation_error, c="red", label="validation", linewidth=3)
+plt.scatter([np.where(validation_error == np.min(validation_error))[0][0]], [np.min(validation_error)], marker='o', s=160, facecolors='none', edgecolors='r', linewidth=3)
+plt.plot(train_error, c="blue", label="train", linewidth=3)
+plt.scatter([np.where(train_error == np.min(train_error))[0][0]], [np.min(train_error)], marker='o', s=160, facecolors='none', edgecolors='b', linewidth=3)
 plt.xlabel('Iteration')
 plt.ylabel('% Error')
 plt.legend()
@@ -177,10 +181,10 @@ validation_mll = MeanLogisticLoss(weightMatrix, validation_X, validation_y)
 train_mll = MeanLogisticLoss(weightMatrix, train_X, train_y)
 
 # Logistic Loss plot
-plt.plot(validation_mll, c="red", label="validation")
-plt.scatter([np.where(validation_mll == np.min(validation_mll))[0][0]], [np.min(validation_mll)], marker='o', s=80, facecolors='none', edgecolors='r')
-plt.plot(train_mll, c="blue", label="train")
-plt.scatter([np.where(train_mll == np.min(train_mll))[0][0]], [np.min(train_mll)], marker='o', s=80, facecolors='none', edgecolors='b')
+plt.plot(validation_mll, c="red", label="validation", linewidth=3)
+plt.scatter([np.where(validation_mll == np.min(validation_mll))[0][0]], [np.min(validation_mll)], marker='o', s=160, facecolors='none', edgecolors='r', linewidth=3)
+plt.plot(train_mll, c="blue", label="train", linewidth=3)
+plt.scatter([np.where(train_mll == np.min(train_mll))[0][0]], [np.min(train_mll)], marker='o', s=160, facecolors='none', edgecolors='b', linewidth=3)
 plt.xlabel('Iteration')
 plt.ylabel('Logistic Loss')
 plt.legend()
@@ -196,17 +200,12 @@ fnames.append(fname)
 optimal_itr = np.where(validation_mll == np.min(validation_mll))[0][0]
 test_predict = np.matmul(test_X, weightMatrix)
 fpr, tpr, thresholds = metrics.roc_curve(test_y[:, 0], test_predict[:, optimal_itr], pos_label=1)
-linear = np.linspace(0, 1, 1000)
-plt.plot(linear, linear, linestyle='--', color="black")
-plt.plot(fpr, tpr, color='green')
-plt.xlabel('FPR')
-plt.ylabel('TPR')
-fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_roc_curve.png"
-fname="./figures/" + fname
-plt.savefig(fname)
-plt.clf()
+data = np.array([fpr, tpr]).T
+fname = sys.argv[1] + "_step_" + str(stepSize) + "_itr_" + str(maxiterations) + "_seed_" + str(seed) + "_roc_data.npy"
+fname = "./roc-data/" + fname
+np.save(fname, data)
 fnames.append(fname)
 
-print("Figures Created ")
+print("Files created:")
 for i in range(len(fnames)):
     print(str(fnames[i]))
