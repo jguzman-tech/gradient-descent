@@ -49,7 +49,8 @@ All figures from our final report are located in ./final-report-figs/
 
 *** 2.1. Reproduce our results:
 Again this is assuming a linux system. If you're a windows user then you'll have
-to figure out your powershell or cmd command equivalents.
+to figure out your powershell or cmd command equivalents. On my computer the
+reproduce.sh file took just under 5 minutes to execute.
 **** 2.1.1. Setup your environment as described in '1. How to run'
 **** 2.2.1. Execute ./reproduce.sh
 ** 3. About
